@@ -48,7 +48,7 @@ if __name__ == "__main__":
                         help="select adjust mode, it works for 'mode = adjust'")
     parser.add_argument("--norm_log", default=True, type=bool,
                         help="Whether to preprocess data. 'sc.pp.normalization()', 'sc.pp.log1p()'")
-    parser.add_argument("--is_scale", default=True, type=bool,
+    parser.add_argument("--is_scale", default=False, type=bool,
                         help="Whether to preprocess data. 'sc.pp.scale()'")
     parser.add_argument("--n_pcs", default=50, type=int,
                         help="Number of principal components retained in PCA. default, 50.")
