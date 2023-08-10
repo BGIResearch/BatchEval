@@ -50,14 +50,14 @@ class BatchClassifier:
                                                                   batch_size=batch_size)
         self.loss_fn = MultiCEFocalLoss(n_batch, gamma=2, alpha=.25, reduction="mean")
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=1e-3, weight_decay=5e-4)
-        self.scaler = torch.cuda.amp.GradScaler()
+        # self.scaler = torch.cuda.amp.GradScaler()
 
     def set_seed(self, seed=42):
         torch.set_num_threads(24)
         torch.manual_seed(seed)
         torch.cuda.manual_seed_all(seed)
-        torch.backends.cudnn.deterministic = True
-        torch.backends.cudnn.benchmark = False
+        # torch.backends.cudnn.deterministic = True
+        # torch.backends.cudnn.benchmark = False
         np.random.seed(seed)
         random.seed(seed)
 
@@ -99,13 +99,18 @@ class BatchClassifier:
                 x, y = data
                 x = x.to(self.device, non_blocking=True)
                 y = y.long().to(self.device)
-                with torch.cuda.amp.autocast():
-                    y_hat = self.model(x)
-                    loss = self.loss_fn(y_hat, y)
+                # with torch.cuda.amp.autocast():
+                y_hat = self.model(x)
+                loss = self.loss_fn(y_hat, y)
                 self.optimizer.zero_grad()
-                self.scaler.scale(loss).backward()
-                self.scaler.step(self.optimizer)
-                self.scaler.update()
+                
+                # self.scaler.scale(loss).backward()
+                # self.scaler.step(self.optimizer)
+                # self.scaler.update()
+                
+                loss.backward()
+                self.optimizer.step()
+                
                 epoch_loss.append(loss.item())
                 total = y.size(0)
                 predict = y_hat.argmax(1)
